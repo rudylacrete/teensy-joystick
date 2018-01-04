@@ -14,7 +14,7 @@
 #define X_AXIS_PIN PIN_F0
 #define JOY_NUM 1
 // minimum value read from potentiometer
-#define POTENTIOMETER_MIN 290
+#define POTENTIOMETER_MIN 300
 // maximum value read from potentiometer
 #define POTENTIOMETER_MAX 343
 #define ADC_MIN 0
