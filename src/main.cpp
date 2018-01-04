@@ -13,12 +13,23 @@
 // https://www.pjrc.com/teensy/card2b.pdf
 #define X_AXIS_PIN PIN_F0
 #define JOY_NUM 1
+// minimum value read from potentiometer
+#define POTENTIOMETER_MIN 290
+// maximum value read from potentiometer
+#define POTENTIOMETER_MAX 343
+#define ADC_MIN 0
+#define ADC_MAX 1023
 
 Bounce debouncer = Bounce();
 
+int mapPotentiometerValue(int rawValue) {
+  int translatedValue = map(rawValue, POTENTIOMETER_MIN, POTENTIOMETER_MAX, 0, 1023);
+  // ensure we stay between ADC_MIN and ADC_MAX
+  return max(ADC_MIN, min(ADC_MAX, translatedValue));
+}
+
 void setup()
 {
-  // initialize LED digital pin as an output.
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(BTN_PIN, INPUT_PULLUP);
   debouncer.attach(BTN_PIN);
@@ -34,12 +45,15 @@ void loop()
     if (debouncer.read())
     {
       digitalWrite(LED_BUILTIN, LOW);
-      Joystick.button(JOY_NUM, 0);
+      Joystick.button(JOY_NUM, LOW);
     } else {
       digitalWrite(LED_BUILTIN, HIGH);
-      Joystick.button(JOY_NUM, 1);
+      Joystick.button(JOY_NUM, HIGH);
     }
   }
   // update joystick X axis with analog value for potentiometer
-  Joystick.X(analogRead(X_AXIS_PIN));
+  int xValue = analogRead(X_AXIS_PIN);
+  // map potentiometer values to full ADC 10 bits range
+  int translatedValue = mapPotentiometerValue(xValue);
+  Joystick.X(translatedValue);
 }
